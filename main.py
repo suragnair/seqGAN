@@ -27,11 +27,11 @@ oracle_samples_path = './oracle_samples.trc'
 oracle_state_dict_path = './oracle_EMBDIM32_HIDDENDIM32_VOCAB5000_MAXSEQLEN20.trc'
 
 # MAIN
-oracle = generator.Generator(GEN_EMBEDDING_DIM, GEN_HIDDEN, VOCAB_SIZE, MAX_SEQ_LEN, cuda=CUDA)
+oracle = generator.Generator(GEN_EMBEDDING_DIM, GEN_HIDDEN, VOCAB_SIZE, MAX_SEQ_LEN, gpu=CUDA)
 oracle.load_state_dict(torch.load(oracle_state_dict_path))
 oracle_samples = torch.load(oracle_samples_path)
 
-gen = generator.Generator(GEN_EMBEDDING_DIM, GEN_HIDDEN, VOCAB_SIZE, MAX_SEQ_LEN, cuda=CUDA)
+gen = generator.Generator(GEN_EMBEDDING_DIM, GEN_HIDDEN, VOCAB_SIZE, MAX_SEQ_LEN, gpu=CUDA)
 
 # GENERATOR MLE TRAINING
 if CUDA:
@@ -48,7 +48,7 @@ for epoch in range(MLE_TRAIN_EPOCHS):
 
     for i in range(0, POS_NEG_SAMPLES, BATCH_SIZE):
         inp, target = helpers.prepare_generator_data(oracle_samples[i:i+BATCH_SIZE], start_letter=START_LETTER,
-                                                     cuda=CUDA)
+                                                     gpu=CUDA)
         optimizer.zero_grad()
         loss = gen.batchNLLLoss(inp, target)
         loss.backward()
@@ -65,7 +65,7 @@ for epoch in range(MLE_TRAIN_EPOCHS):
 
     # sample from generator and compute oracle NLL
     s = gen.sample(1000)
-    inp, target = helpers.prepare_generator_data(s, start_letter=START_LETTER, cuda=CUDA)
+    inp, target = helpers.prepare_generator_data(s, start_letter=START_LETTER, gpu=CUDA)
     oracle_loss = oracle.batchNLLLoss(inp, target)/MAX_SEQ_LEN
 
     print(' average_train_NLL = %.4f, oracle_sample_NLL = %.4f' % (total_loss, oracle_loss.data[0]))

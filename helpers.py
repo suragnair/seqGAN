@@ -2,7 +2,7 @@ import torch
 from torch.autograd import Variable
 
 
-def prepare_generator_data(samples, start_letter=0, cuda=False):
+def prepare_generator_data(samples, start_letter=0, gpu=False):
     """
     Takes samples and returns
 
@@ -24,7 +24,7 @@ def prepare_generator_data(samples, start_letter=0, cuda=False):
     inp = Variable(inp).type(torch.LongTensor)
     target = Variable(target).type(torch.LongTensor)
 
-    if cuda:
+    if gpu:
         inp = inp.cuda()
         target = target.cuda()
 
