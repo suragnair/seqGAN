@@ -1,6 +1,6 @@
 import torch
 from torch.autograd import Variable
-
+from math import ceil
 
 def prepare_generator_batch(samples, start_letter=0, gpu=False):
     """
@@ -62,3 +62,15 @@ def prepare_discriminator_data(pos_samples, neg_samples, gpu=False):
 
     return inp, target
 
+
+def batchwise_sample(gen, num_samples, batch_size):
+    """
+    Sample num_samples samples batch_size samples at a time from gen.
+    Does not require gpu since gen.sample() takes care of that.
+    """
+
+    samples = []
+    for i in range(ceil(num_samples/float(batch_size))):
+        samples.append(gen.sample(batch_size))
+
+    return torch.cat(samples, 0)

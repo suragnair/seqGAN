@@ -81,7 +81,7 @@ print('\nStarting Discriminator Training...')
 dis_optimizer = optim.Adam(dis.parameters())
 
 for d_step in range(50):
-    s = gen.sample(POS_NEG_SAMPLES)
+    s = helpers.batchwise_sample(gen, POS_NEG_SAMPLES, BATCH_SIZE)
     dis_inp, dis_target = helpers.prepare_discriminator_data(oracle_samples, s, gpu=CUDA)
     for epoch in range(3):
         print('d-step %d epoch %d : ' % (d_step+1, epoch+1), end='')
