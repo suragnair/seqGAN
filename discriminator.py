@@ -6,12 +6,12 @@ import pdb
 
 class Discriminator(nn.Module):
 
-    def __init__(self, embedding_dim, hidden_dim, vocab_size, max_seq_len, cuda=False):
+    def __init__(self, embedding_dim, hidden_dim, vocab_size, max_seq_len, gpu=False):
         super(Discriminator, self).__init__()
         self.hidden_dim = hidden_dim
         self.embedding_dim = embedding_dim
         self.max_seq_len = max_seq_len
-        self.cuda = cuda
+        self.gpu = gpu
 
         self.embeddings = nn.Embedding(vocab_size, embedding_dim)
         self.gru = nn.GRU(embedding_dim, hidden_dim)
@@ -20,7 +20,7 @@ class Discriminator(nn.Module):
     def init_hidden(self, batch_size):
         h = autograd.Variable(torch.zeros(1, batch_size, self.hidden_dim))
 
-        if self.cuda:
+        if self.gpu:
             return h.cuda()
         else:
             return h

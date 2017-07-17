@@ -10,13 +10,13 @@ import torch.nn.init as init
 
 class Generator(nn.Module):
 
-    def __init__(self, embedding_dim, hidden_dim, vocab_size, max_seq_len, cuda=False, oracle_init=False):
+    def __init__(self, embedding_dim, hidden_dim, vocab_size, max_seq_len, gpu=False, oracle_init=False):
         super(Generator, self).__init__()
         self.hidden_dim = hidden_dim
         self.embedding_dim = embedding_dim
         self.max_seq_len = max_seq_len
         self.vocab_size = vocab_size
-        self.cuda = cuda
+        self.gpu = gpu
 
         self.embeddings = nn.Embedding(vocab_size, embedding_dim)
         self.gru = nn.GRU(embedding_dim, hidden_dim)
@@ -31,7 +31,7 @@ class Generator(nn.Module):
     def init_hidden(self, batch_size=1):
         h = autograd.Variable(torch.zeros(1, batch_size, self.hidden_dim))
 
-        if self.cuda:
+        if self.gpu:
             return h.cuda()
         else:
             return h
@@ -61,7 +61,7 @@ class Generator(nn.Module):
         h = self.init_hidden(num_samples)
         inp = autograd.Variable(torch.LongTensor([start_letter]*num_samples))
 
-        if self.cuda:
+        if self.gpu:
             samples = samples.cuda()
             inp = inp.cuda()
 
