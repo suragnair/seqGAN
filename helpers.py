@@ -44,7 +44,7 @@ def prepare_discriminator_data(pos_samples, neg_samples, gpu=False):
         - target: pos_size + neg_size (boolean 1/0)
     """
 
-    inp = torch.cat((pos_samples, neg_samples), 0)
+    inp = torch.cat((pos_samples, neg_samples), 0).type(torch.LongTensor)
     target = torch.ones(pos_samples.size()[0] + neg_samples.size()[0])
     target[pos_samples.size()[0]:] = 0
 
@@ -53,7 +53,7 @@ def prepare_discriminator_data(pos_samples, neg_samples, gpu=False):
     target = target[perm]
     inp = inp[perm]
 
-    inp = Variable(inp).type(torch.LongTensor)
+    inp = Variable(inp)
     target = Variable(target)
 
     if gpu:
@@ -70,7 +70,7 @@ def batchwise_sample(gen, num_samples, batch_size):
     """
 
     samples = []
-    for i in range(ceil(num_samples/float(batch_size))):
+    for i in range(int(ceil(num_samples/float(batch_size)))):
         samples.append(gen.sample(batch_size))
 
-    return torch.cat(samples, 0)
+    return torch.cat(samples, 0)[:num_samples]

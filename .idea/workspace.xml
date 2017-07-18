@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2797ef72-3c38-4384-8aa2-c7e5b01aa95c" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/generator.py" afterPath="$PROJECT_DIR$/generator.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/helpers.py" afterPath="$PROJECT_DIR$/helpers.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.py" afterPath="$PROJECT_DIR$/main.py" />
     </list>
@@ -25,11 +25,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="239">
-              <caret line="83" column="66" selection-start-line="83" selection-start-column="16" selection-end-line="83" selection-end-column="66" />
+            <state relative-caret-position="539">
+              <caret line="109" column="44" selection-start-line="109" selection-start-column="44" selection-end-line="109" selection-end-column="44" />
               <folding>
                 <element signature="e#0#37#0" expanded="true" />
               </folding>
@@ -37,11 +37,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="helpers.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="helpers.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/helpers.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="659">
-              <caret line="75" column="31" selection-start-line="75" selection-start-column="31" selection-end-line="75" selection-end-column="31" />
+            <state relative-caret-position="524">
+              <caret line="55" column="23" selection-start-line="55" selection-start-column="23" selection-end-line="55" selection-end-column="23" />
               <folding>
                 <element signature="e#0#12#0" expanded="true" />
               </folding>
@@ -52,8 +52,8 @@
       <file leaf-file-name="generator.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/generator.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="225">
-              <caret line="65" column="26" selection-start-line="65" selection-start-column="22" selection-end-line="65" selection-end-column="26" />
+            <state relative-caret-position="165">
+              <caret line="58" column="60" selection-start-line="58" selection-start-column="60" selection-end-line="58" selection-end-column="83" />
               <folding>
                 <element signature="e#0#12#0" expanded="true" />
               </folding>
@@ -64,7 +64,7 @@
       <file leaf-file-name="discriminator.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/discriminator.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="720">
+            <state relative-caret-position="657">
               <caret line="48" column="34" selection-start-line="48" selection-start-column="34" selection-end-line="48" selection-end-column="34" />
               <folding>
                 <element signature="e#0#12#0" expanded="true" />
@@ -104,10 +104,10 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/../dlenv/lib/python2.7/site-packages/torch/nn/init.py" />
-        <option value="$PROJECT_DIR$/generator.py" />
         <option value="$PROJECT_DIR$/discriminator.py" />
-        <option value="$PROJECT_DIR$/main.py" />
+        <option value="$PROJECT_DIR$/generator.py" />
         <option value="$PROJECT_DIR$/helpers.py" />
+        <option value="$PROJECT_DIR$/main.py" />
       </list>
     </option>
   </component>
@@ -499,6 +499,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="10" selection-start-line="0" selection-start-column="10" selection-end-line="0" selection-end-column="10" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -527,30 +528,20 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/discriminator.py">
+    <entry file="file://$PROJECT_DIR$/generator.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="720">
-          <caret line="48" column="34" selection-start-line="48" selection-start-column="34" selection-end-line="48" selection-end-column="34" />
+        <state relative-caret-position="165">
+          <caret line="58" column="60" selection-start-line="58" selection-start-column="60" selection-end-line="58" selection-end-column="83" />
           <folding>
             <element signature="e#0#12#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/main.py">
+    <entry file="file://$PROJECT_DIR$/discriminator.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="239">
-          <caret line="83" column="66" selection-start-line="83" selection-start-column="16" selection-end-line="83" selection-end-column="66" />
-          <folding>
-            <element signature="e#0#37#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/generator.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="65" column="26" selection-start-line="65" selection-start-column="22" selection-end-line="65" selection-end-column="26" />
+        <state relative-caret-position="657">
+          <caret line="48" column="34" selection-start-line="48" selection-start-column="34" selection-end-line="48" selection-end-column="34" />
           <folding>
             <element signature="e#0#12#0" expanded="true" />
           </folding>
@@ -559,10 +550,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/helpers.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="659">
-          <caret line="75" column="31" selection-start-line="75" selection-start-column="31" selection-end-line="75" selection-end-column="31" />
+        <state relative-caret-position="524">
+          <caret line="55" column="23" selection-start-line="55" selection-start-column="23" selection-end-line="55" selection-end-column="23" />
           <folding>
             <element signature="e#0#12#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="539">
+          <caret line="109" column="44" selection-start-line="109" selection-start-column="44" selection-end-line="109" selection-end-column="44" />
+          <folding>
+            <element signature="e#0#37#0" expanded="true" />
           </folding>
         </state>
       </provider>

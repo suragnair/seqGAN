@@ -31,15 +31,44 @@ pretrained_gen_path = './gen_MLEtrain_EMBDIM32_HIDDENDIM32_VOCAB5000_MAXSEQLEN20
 # MAIN
 oracle = generator.Generator(GEN_EMBEDDING_DIM, GEN_HIDDEN_DIM, VOCAB_SIZE, MAX_SEQ_LEN, gpu=CUDA)
 oracle.load_state_dict(torch.load(oracle_state_dict_path))
-oracle_samples = torch.load(oracle_samples_path)
+oracle_samples = torch.load(oracle_samples_path).type(torch.LongTensor)
 
 gen = generator.Generator(GEN_EMBEDDING_DIM, GEN_HIDDEN_DIM, VOCAB_SIZE, MAX_SEQ_LEN, gpu=CUDA)
-dis = discriminator.Discriminator(DIS_EMBEDDING_DIM, DIS_HIDDEN_DIM, VOCAB_SIZE, MAX_SEQ_LEN)
+dis = discriminator.Discriminator(DIS_EMBEDDING_DIM, DIS_HIDDEN_DIM, VOCAB_SIZE, MAX_SEQ_LEN, gpu=CUDA)
+
+
+def train_discriminator(discriminator, dis_opt, real_data_samples, generator, d_steps, epochs):
+    for d_step in range(d_steps):
+        s = helpers.batchwise_sample(generator, POS_NEG_SAMPLES, BATCH_SIZE)
+        dis_inp, dis_target = helpers.prepare_discriminator_data(real_data_samples, s, gpu=CUDA)
+        for epoch in range(epochs):
+            print('d-step %d epoch %d : ' % (d_step + 1, epoch + 1), end='')
+            sys.stdout.flush()
+            total_loss = 0
+
+            for i in range(0, 2 * POS_NEG_SAMPLES, BATCH_SIZE):
+                inp, target = dis_inp[i:i + BATCH_SIZE], dis_target[i:i + BATCH_SIZE]
+                dis_opt.zero_grad()
+                loss = discriminator.batchBCELoss(inp, target)
+                loss.backward()
+                dis_opt.step()
+
+                total_loss += loss.data[0]
+
+                if (i / BATCH_SIZE) % ceil(ceil(2 * POS_NEG_SAMPLES / float(
+                        BATCH_SIZE)) / 10.) == 0:  # roughly every 10% of an epoch
+                    print('.', end='')
+                    sys.stdout.flush()
+
+            total_loss /= ceil(2 * POS_NEG_SAMPLES / float(BATCH_SIZE))
+            print(' average_loss = %.4f' % total_loss)
+
 
 if CUDA:
     oracle = oracle.cuda()
     gen = gen.cuda()
     dis = dis.cuda()
+    oracle_samples = oracle_samples.cuda()
 
 # GENERATOR MLE TRAINING
 print('Starting Generator MLE Training...')
@@ -68,7 +97,7 @@ gen_optimizer = optim.Adam(gen.parameters())
 #     total_loss = total_loss/ceil(POS_NEG_SAMPLES/float(BATCH_SIZE))/MAX_SEQ_LEN
 #
 #     # sample from generator and compute oracle NLL
-#     s = gen.sample(1000)
+#     s = gen.sample(POS_NEG_SAMPLES/10)
 #     inp, target = helpers.prepare_generator_data(s, start_letter=START_LETTER, gpu=CUDA)
 #     oracle_loss = oracle.batchNLLLoss(inp, target)/MAX_SEQ_LEN
 #
@@ -79,30 +108,7 @@ gen.load_state_dict(torch.load(pretrained_gen_path))
 # TRAIN DISCRIMINATOR
 print('\nStarting Discriminator Training...')
 dis_optimizer = optim.Adam(dis.parameters())
-
-for d_step in range(50):
-    s = helpers.batchwise_sample(gen, POS_NEG_SAMPLES, BATCH_SIZE)
-    dis_inp, dis_target = helpers.prepare_discriminator_data(oracle_samples, s, gpu=CUDA)
-    for epoch in range(3):
-        print('d-step %d epoch %d : ' % (d_step+1, epoch+1), end='')
-        sys.stdout.flush()
-        total_loss = 0
-
-        for i in range(0, 2*POS_NEG_SAMPLES, BATCH_SIZE):
-            inp, target = dis_inp[i:i+BATCH_SIZE], dis_target[i:i+BATCH_SIZE]
-            dis_optimizer.zero_grad()
-            loss = dis.batchBCELoss(inp, target)
-            loss.backward()
-            dis_optimizer.step()
-
-            total_loss += loss.data[0]
-
-            if (i / BATCH_SIZE) % ceil(ceil(2*POS_NEG_SAMPLES / float(BATCH_SIZE)) / 10.) == 0:  # roughly every 10% of an epoch
-                print('.', end='')
-                sys.stdout.flush()
-
-        total_loss = total_loss/ceil(2*POS_NEG_SAMPLES/float(BATCH_SIZE))
-        print(' average_loss = %.4f' % total_loss)
+train_discriminator(dis, dis_optimizer, oracle_samples, gen, 50, 3)
 
 # ADVERSARIAL TRAINING
-
+print('\nStarting Adersarial Training...')

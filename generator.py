@@ -56,7 +56,7 @@ class Generator(nn.Module):
             - samples: num_samples x max_seq_length (a sampled sequence in each row)
         """
 
-        samples = torch.zeros(num_samples, self.max_seq_len)
+        samples = torch.zeros(num_samples, self.max_seq_len).type(torch.LongTensor)
 
         h = self.init_hidden(num_samples)
         inp = autograd.Variable(torch.LongTensor([start_letter]*num_samples))
