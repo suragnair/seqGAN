@@ -1,5 +1,6 @@
 from __future__ import print_function
 from math import ceil
+import numpy as np
 import sys
 
 import torch
@@ -94,11 +95,17 @@ def train_generator_PG(gen, gen_opt, oracle, dis, num_batches):
     print(' oracle_sample_NLL = %.4f' % oracle_loss.data[0])
 
 
-def train_discriminator(discriminator, dis_opt, real_data_samples, generator, d_steps, epochs):
+def train_discriminator(discriminator, dis_opt, real_data_samples, generator, oracle, d_steps, epochs):
     """
     Training the discriminator on real_data_samples (positive) and generated samples from generator (negative).
     Samples are drawn d_steps times, and the discriminator is trained for epochs epochs.
     """
+
+    # generating a small validation set before training (using oracle and generator)
+    pos_val = oracle.sample(100)
+    neg_val = gen.sample(100)
+    val_inp, val_target = helpers.prepare_discriminator_data(pos_val, neg_val, gpu=CUDA)
+
     for d_step in range(d_steps):
         s = helpers.batchwise_sample(generator, POS_NEG_SAMPLES, BATCH_SIZE)
         dis_inp, dis_target = helpers.prepare_discriminator_data(real_data_samples, s, gpu=CUDA)
@@ -122,7 +129,9 @@ def train_discriminator(discriminator, dis_opt, real_data_samples, generator, d_
                     sys.stdout.flush()
 
             total_loss /= ceil(2 * POS_NEG_SAMPLES / float(BATCH_SIZE))
-            print(' average_loss = %.4f' % total_loss)
+
+            val_pred = dis.batchClassify(val_inp)
+            print(' average_loss = %.4f, val_acc = %.4f' % (total_loss, np.mean(val_pred.data.numpy()==val_target.data.numpy())))
 
 # MAIN
 if __name__ == '__main__':
@@ -149,7 +158,7 @@ if __name__ == '__main__':
     # PRETRAIN DISCRIMINATOR
     print('\nStarting Discriminator Training...')
     dis_optimizer = optim.Adam(dis.parameters())
-    # train_discriminator(dis, dis_optimizer, oracle_samples, gen, 50, 3)
+    # train_discriminator(dis, dis_optimizer, oracle_samples, gen, oracle, 50, 3)
 
     dis.load_state_dict(torch.load(pretrained_dis_path))
 
@@ -164,4 +173,4 @@ if __name__ == '__main__':
 
         # TRAIN DISCRIMINATOR
         print('\nAdversarial Training Discriminator : ')
-        train_discriminator(dis, dis_optimizer, oracle_samples, gen, 5, 3)
+        train_discriminator(dis, dis_optimizer, oracle_samples, gen, oracle, 5, 3)
