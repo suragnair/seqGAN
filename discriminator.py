@@ -34,6 +34,21 @@ class Discriminator(nn.Module):
         out = F.sigmoid(out)
         return out
 
+    def batchClassify(self, inp):
+        """
+        Classifies a batch of sequences.
+
+        Inputs: inp
+            - inp: batch_size x seq_len
+
+        Returns: out
+            - out: batch_size ([0,1] score)
+        """
+
+        h = self.init_hidden(inp.size()[0])
+        out = self.forward(inp, h)
+        return out.view(-1)
+
     def batchBCELoss(self, inp, target):
         """
         Returns Binary Cross Entropy Loss for discriminator.
@@ -47,3 +62,4 @@ class Discriminator(nn.Module):
         h = self.init_hidden(inp.size()[0])
         out = self.forward(inp, h)
         return loss_fn(out, target)
+
