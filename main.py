@@ -2,9 +2,11 @@ from __future__ import print_function
 from math import ceil
 import numpy as np
 import sys
+import pdb
 
 import torch
 import torch.optim as optim
+import torch.nn as nn
 
 import generator
 import discriminator
@@ -113,15 +115,19 @@ def train_discriminator(discriminator, dis_opt, real_data_samples, generator, or
             print('d-step %d epoch %d : ' % (d_step + 1, epoch + 1), end='')
             sys.stdout.flush()
             total_loss = 0
+            total_acc = 0
 
             for i in range(0, 2 * POS_NEG_SAMPLES, BATCH_SIZE):
                 inp, target = dis_inp[i:i + BATCH_SIZE], dis_target[i:i + BATCH_SIZE]
                 dis_opt.zero_grad()
-                loss = discriminator.batchBCELoss(inp, target)
+                out = discriminator.batchClassify(inp, target)
+                loss_fn =  nn.BCELoss()
+                loss = loss_fn(out, target)
                 loss.backward()
                 dis_opt.step()
 
                 total_loss += loss.data[0]
+                total_acc += torch.sum(out>0.5==target>0.5).data[0]
 
                 if (i / BATCH_SIZE) % ceil(ceil(2 * POS_NEG_SAMPLES / float(
                         BATCH_SIZE)) / 10.) == 0:  # roughly every 10% of an epoch
@@ -129,9 +135,11 @@ def train_discriminator(discriminator, dis_opt, real_data_samples, generator, or
                     sys.stdout.flush()
 
             total_loss /= ceil(2 * POS_NEG_SAMPLES / float(BATCH_SIZE))
+            total_acc /= float(2 * POS_NEG_SAMPLES)
 
             val_pred = dis.batchClassify(val_inp)
-            print(' average_loss = %.4f, val_acc = %.4f' % (total_loss, np.mean(val_pred.data.numpy()==val_target.data.numpy())))
+            print(' average_loss = %.4f, train_acc = %.4f, val_acc = %.4f' % (
+                total_loss, total_acc, torch.sum(val_pred>0.5==val_target>0.5).data[0]/200.))
 
 # MAIN
 if __name__ == '__main__':
