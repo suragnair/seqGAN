@@ -6,7 +6,7 @@ import pdb
 
 class Discriminator(nn.Module):
 
-    def __init__(self, embedding_dim, hidden_dim, vocab_size, max_seq_len, gpu=False):
+    def __init__(self, embedding_dim, hidden_dim, vocab_size, max_seq_len, gpu=False, dropout=0.5):
         super(Discriminator, self).__init__()
         self.hidden_dim = hidden_dim
         self.embedding_dim = embedding_dim
@@ -14,8 +14,10 @@ class Discriminator(nn.Module):
         self.gpu = gpu
 
         self.embeddings = nn.Embedding(vocab_size, embedding_dim)
-        self.gru = nn.GRU(embedding_dim, hidden_dim)
-        self.gru2out = nn.Linear(hidden_dim, 1)
+        self.gru = nn.GRU(embedding_dim, hidden_dim, dropout=dropout)
+        self.gru2hidden = nn.Linear(hidden_dim, hidden_dim)
+        self.dropout_linear = nn.Dropout(p=dropout)
+        self.hidden2out = nn.Linear(hidden_dim, 1)
 
     def init_hidden(self, batch_size):
         h = autograd.Variable(torch.zeros(1, batch_size, self.hidden_dim))
@@ -30,7 +32,10 @@ class Discriminator(nn.Module):
         emb = self.embeddings(input)                            # batch_size x seq_len x embedding_dim
         emb = emb.permute(1, 0, 2)                              # seq_len x batch_size x embedding_dim
         _, hidden = self.gru(emb, hidden)                       # 1 x batch_size x hidden_dim (out)
-        out = self.gru2out(hidden.view(-1, self.hidden_dim))    # batch_size x 1
+        out = self.gru2hidden(hidden.view(-1, self.hidden_dim)) # batch_size x hidden_dim
+        out = F.relu(out)
+        out = self.dropout_linear(out)
+        out = self.hidden2out(out)                              # batch_size x 1
         out = F.sigmoid(out)
         return out
 

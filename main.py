@@ -59,7 +59,7 @@ def train_generator_MLE(gen, gen_opt, oracle, real_data_samples, epochs):
 
         # sample from generator and compute oracle NLL
         s = gen.sample(POS_NEG_SAMPLES / 10)
-        inp, target = helpers.prepare_generator_data(s, start_letter=START_LETTER, gpu=CUDA)
+        inp, target = helpers.prepare_generator_batch(s, start_letter=START_LETTER, gpu=CUDA)
         oracle_loss = oracle.batchNLLLoss(inp, target) / MAX_SEQ_LEN
 
         print(' average_train_NLL = %.4f, oracle_sample_NLL = %.4f' % (total_loss, oracle_loss.data[0]))
@@ -71,23 +71,24 @@ def train_generator_PG(gen, gen_opt, oracle, dis, num_batches):
     Training is done for num_batches batches.
     """
 
-    for batch in num_batches:
+    for batch in range(num_batches):
         s = gen.sample(BATCH_SIZE)
-        rewards = dis.batchClassify(s)
-        rewards = 2*rewards - 1         # [0,1] -> [-1,1] to provide positive and negative reward signals
         inp, target = helpers.prepare_generator_batch(s, start_letter=START_LETTER, gpu=CUDA)
+        rewards = dis.batchClassify(target)
+        rewards = 2*rewards - 1         # [0,1] -> [-1,1] to provide positive and negative reward signals
+
         gen_opt.zero_grad()
         pg_loss = gen.batchPGLoss(inp, target, rewards)
         pg_loss.backward()
         gen_opt.step()
 
-        if batch % (num_batches/10) == 0:
+        if batch % ceil(num_batches/float(10)) == 0:
             print('.', end='')
             sys.stdout.flush()
 
     # sample from generator and compute oracle NLL
     s = gen.sample(POS_NEG_SAMPLES / 10)
-    inp, target = helpers.prepare_generator_data(s, start_letter=START_LETTER, gpu=CUDA)
+    inp, target = helpers.prepare_generator_batch(s, start_letter=START_LETTER, gpu=CUDA)
     oracle_loss = oracle.batchNLLLoss(inp, target) / MAX_SEQ_LEN
 
     print(' oracle_sample_NLL = %.4f' % oracle_loss.data[0])
@@ -155,6 +156,7 @@ if __name__ == '__main__':
     # ADVERSARIAL TRAINING
     print('\nStarting Adversarial Training...')
     for epoch in range(ADV_TRAIN_EPOCHS):
+        print('\n--------\nEPOCH %d\n--------' % (epoch+1))
         # TRAIN GENERATOR
         print('\nAdversarial Training Generator : ', end='')
         sys.stdout.flush()
