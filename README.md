@@ -21,7 +21,7 @@ The following hacks (borrowed from https://github.com/soumith/ganhacks) seem to 
 - Using dropout in both training and testing phase
 
 - Stablity is extremely sensitive to almost every parameter :/
-- The GAN phase may not always lead to massive drops in NLL (sometimes very minimal) - I suspect this is due to the very crude nature of the policy gradients implented (without rollouts).
+- The GAN phase may not always lead to massive drops in NLL (sometimes very minimal) - I suspect this is due to the very crude nature of the policy gradients implemented (without rollouts).
 
 # Sample Learning Curve
 Learning curve obtained after MLE training for 100 epochs followed by adversarial training. (Your results may vary!)
