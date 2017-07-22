@@ -56,7 +56,7 @@ class Generator(nn.Module):
             - samples: num_samples x max_seq_length (a sampled sequence in each row)
         """
 
-        samples = torch.zeros(num_samples, self.max_seq_len).type(torch.LongTensor)
+        samples = torch.zeros(num_samples, self.max_seq_len)
 
         h = self.init_hidden(num_samples)
         inp = autograd.Variable(torch.LongTensor([start_letter]*num_samples))
@@ -82,7 +82,7 @@ class Generator(nn.Module):
             - inp: batch_size x seq_len
             - target: batch_size x seq_len
 
-            inp should be target with <s> prepended
+            inp should be target with <s> (start letter) prepended
         """
 
         loss_fn = nn.NLLLoss()
@@ -101,14 +101,15 @@ class Generator(nn.Module):
     def batchPGLoss(self, inp, target, reward):
         """
         Returns a pseudo-loss that gives corresponding policy gradients (on calling .backward()).
-        Inspired by the example http://karpathy.github.io/2016/05/31/rl/
+        Inspired by the example in http://karpathy.github.io/2016/05/31/rl/
 
         Inputs: inp, target
             - inp: batch_size x seq_len
             - target: batch_size x seq_len
-            - reward: batch_size (discriminator reward for each sentence)
+            - reward: batch_size (discriminator reward for each sentence, applied to each token of the corresponding
+                      sentence)
 
-            inp should be target with <s> prepended
+            inp should be target with <s> (start letter) prepended
         """
 
         batch_size, seq_len = inp.size()
@@ -121,7 +122,7 @@ class Generator(nn.Module):
             out, h = self.forward(inp[i], h)
             # TODO: should h be detached from graph (.detach())?
             for j in range(batch_size):
-                loss += -out[j][target.data[i][j]]*reward[j]     # log(prob(y_t|Y_1:t-1)*Q
+                loss += -out[j][target.data[i][j]]*reward[j]     # log(P(y_t|Y_1:Y_{t-1})) * Q
 
         return loss/batch_size
 

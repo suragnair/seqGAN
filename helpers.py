@@ -75,7 +75,8 @@ def batchwise_sample(gen, num_samples, batch_size):
 
     return torch.cat(samples, 0)[:num_samples]
 
-def oracle_nll(gen, oracle, num_samples, batch_size, max_seq_len, start_letter=0, gpu=False):
+
+def batchwise_oracle_nll(gen, oracle, num_samples, batch_size, max_seq_len, start_letter=0, gpu=False):
     s = batchwise_sample(gen, num_samples, batch_size)
     oracle_nll = 0
     for i in range(0, num_samples, batch_size):

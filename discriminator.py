@@ -28,15 +28,15 @@ class Discriminator(nn.Module):
             return h
 
     def forward(self, input, hidden):
-        # input dim                                             # batch_size x seq_len
-        emb = self.embeddings(input)                            # batch_size x seq_len x embedding_dim
-        emb = emb.permute(1, 0, 2)                              # seq_len x batch_size x embedding_dim
-        _, hidden = self.gru(emb, hidden)                       # 4 x batch_size x hidden_dim
-        hidden = hidden.permute(1, 0, 2)                        # batch_size x 4 x hidden_dim
-        out = self.gru2hidden(hidden.view(-1, 4*self.hidden_dim)) # batch_size x hidden_dim*4
-        out = F.relu(out)
+        # input dim                                                # batch_size x seq_len
+        emb = self.embeddings(input)                               # batch_size x seq_len x embedding_dim
+        emb = emb.permute(1, 0, 2)                                 # seq_len x batch_size x embedding_dim
+        _, hidden = self.gru(emb, hidden)                          # 4 x batch_size x hidden_dim
+        hidden = hidden.permute(1, 0, 2).contiguous()              # batch_size x 4 x hidden_dim
+        out = self.gru2hidden(hidden.view(-1, 4*self.hidden_dim))  # batch_size x 4*hidden_dim
+        out = F.tanh(out)
         out = self.dropout_linear(out)
-        out = self.hidden2out(out)                              # batch_size x 1
+        out = self.hidden2out(out)                                 # batch_size x 1
         out = F.sigmoid(out)
         return out
 
