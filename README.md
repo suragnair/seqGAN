@@ -7,6 +7,12 @@ The code performs the experiment on synthetic data as described in the paper.
 
 You are encouraged to raise any doubts regarding the working of the code as Issues.
 
+To run the code:
+```bash 
+python main.py
+```
+main.py should be your entry point into the code.
+
 # Hacks and Observations
 The following hacks (borrowed from https://github.com/soumith/ganhacks) seem to have worked in this case:
 - Training Discriminator a lot more than Generator (Generator is trained only for one batch of examples, and increasing the batch size hurts stability)
@@ -15,3 +21,7 @@ The following hacks (borrowed from https://github.com/soumith/ganhacks) seem to 
 - Using dropout in both training and testing phase
 - Stablity is extremely sensitive to almost every parameter :/
 - The GAN phase may not always lead to massive drops in NLL (sometimes very minimal)! - I suspect this is due to the very crude nature of the policy gradients implented (without rollouts).
+
+# Sample Learning Curve
+Learning curve obtained after MLE training for 100 epochs followed by adversarial training. (Your results may vary!)
+![alt tag](https://raw.githubusercontent.com/suragnair/seqGAN/master/learning_curve.png)
