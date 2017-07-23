@@ -130,9 +130,7 @@ def train_discriminator(discriminator, dis_opt, real_data_samples, generator, or
             total_loss /= ceil(2 * POS_NEG_SAMPLES / float(BATCH_SIZE))
             total_acc /= float(2 * POS_NEG_SAMPLES)
 
-            dis = dis.eval()
             val_pred = discriminator.batchClassify(val_inp)
-            dis = dis.train()
             print(' average_loss = %.4f, train_acc = %.4f, val_acc = %.4f' % (
                 total_loss, total_acc, torch.sum((val_pred>0.5)==(val_target>0.5)).data[0]/200.))
 
@@ -173,7 +171,7 @@ if __name__ == '__main__':
     print('\nStarting Adversarial Training...')
     oracle_loss = helpers.batchwise_oracle_nll(gen, oracle, POS_NEG_SAMPLES, BATCH_SIZE, MAX_SEQ_LEN,
                                                start_letter=START_LETTER, gpu=CUDA)
-    print('\nInitial Oracle Sample Loss : %.4f' % oracle_loss.data[0])
+    print('\nInitial Oracle Sample Loss : %.4f' % oracle_loss)
 
     for epoch in range(ADV_TRAIN_EPOCHS):
         print('\n--------\nEPOCH %d\n--------' % (epoch+1))
