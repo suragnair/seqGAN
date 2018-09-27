@@ -1,7 +1,6 @@
 import torch
 import torch.autograd as autograd
 import torch.nn as nn
-import torch.nn.functional as F
 import pdb
 
 class Discriminator(nn.Module):
@@ -34,10 +33,10 @@ class Discriminator(nn.Module):
         _, hidden = self.gru(emb, hidden)                          # 4 x batch_size x hidden_dim
         hidden = hidden.permute(1, 0, 2).contiguous()              # batch_size x 4 x hidden_dim
         out = self.gru2hidden(hidden.view(-1, 4*self.hidden_dim))  # batch_size x 4*hidden_dim
-        out = F.tanh(out)
+        out = torch.tanh(out)
         out = self.dropout_linear(out)
         out = self.hidden2out(out)                                 # batch_size x 1
-        out = F.sigmoid(out)
+        out = torch.sigmoid(out)
         return out
 
     def batchClassify(self, inp):

@@ -45,7 +45,7 @@ class Generator(nn.Module):
         emb = emb.view(1, -1, self.embedding_dim)               # 1 x batch_size x embedding_dim
         out, hidden = self.gru(emb, hidden)                     # 1 x batch_size x hidden_dim (out)
         out = self.gru2out(out.view(-1, self.hidden_dim))       # batch_size x vocab_size
-        out = F.log_softmax(out)
+        out = F.log_softmax(out, dim=1)
         return out, hidden
 
     def sample(self, num_samples, start_letter=0):
@@ -68,7 +68,7 @@ class Generator(nn.Module):
         for i in range(self.max_seq_len):
             out, h = self.forward(inp, h)               # out: num_samples x vocab_size
             out = torch.multinomial(torch.exp(out), 1)  # num_samples x 1 (sampling from each row)
-            samples[:, i] = out.data
+            samples[:, i] = out.view(-1).data
 
             inp = out.view(-1)
 

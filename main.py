@@ -50,7 +50,7 @@ def train_generator_MLE(gen, gen_opt, oracle, real_data_samples, epochs):
             loss.backward()
             gen_opt.step()
 
-            total_loss += loss.data[0]
+            total_loss += loss.data.item()
 
             if (i / BATCH_SIZE) % ceil(
                             ceil(POS_NEG_SAMPLES / float(BATCH_SIZE)) / 10.) == 0:  # roughly every 10% of an epoch
@@ -119,8 +119,8 @@ def train_discriminator(discriminator, dis_opt, real_data_samples, generator, or
                 loss.backward()
                 dis_opt.step()
 
-                total_loss += loss.data[0]
-                total_acc += torch.sum((out>0.5)==(target>0.5)).data[0]
+                total_loss += loss.data.item()
+                total_acc += torch.sum((out>0.5)==(target>0.5)).data.item()
 
                 if (i / BATCH_SIZE) % ceil(ceil(2 * POS_NEG_SAMPLES / float(
                         BATCH_SIZE)) / 10.) == 0:  # roughly every 10% of an epoch
@@ -132,7 +132,7 @@ def train_discriminator(discriminator, dis_opt, real_data_samples, generator, or
 
             val_pred = discriminator.batchClassify(val_inp)
             print(' average_loss = %.4f, train_acc = %.4f, val_acc = %.4f' % (
-                total_loss, total_acc, torch.sum((val_pred>0.5)==(val_target>0.5)).data[0]/200.))
+                total_loss, total_acc, torch.sum((val_pred>0.5)==(val_target>0.5)).data.item()/200.))
 
 # MAIN
 if __name__ == '__main__':
